@@ -1,11 +1,41 @@
+import { sensor } from '@kit.SensorServiceKit';
+
 @Component
 export struct StepCount {
-  steps: number[] = [3000, 4500, 7000, 9000, 6000, 4000, 2000];
+  @State steps: number[] = [3000, 4500, 7000, 9000, 6000, 4000, 2000];
   days: string[] = ['Mon', 'Tue', 'Wed', 'Thr', 'Fri', 'Sat', 'Sun'];
   @Consume('NavPathStack') pageStack: NavPathStack;
 
   readonly maxSteps: number = 10000;
   readonly maxBarHeight: number = 100;
+
+  aboutToAppear() {
+    this.startPedometerSensor()
+  }
+
+  aboutToDisappear() {
+    this.stopPedometerSensor()
+  }
+
+  startPedometerSensor() {
+    try {
+      sensor.on(sensor.SensorId.PEDOMETER, (data) => {
+        const newSteps = [...this.steps];
+        newSteps[newSteps.length - 1] = Math.round(data.steps);
+        this.steps = newSteps;
+      }, { interval: 1000000000 }); // 1 second
+    } catch (err) {
+      console.error(`Failed to stop pedometer sensor: ${JSON.stringify(err)}`);
+    }
+  }
+
+  stopPedometerSensor() {
+    try {
+      sensor.off(sensor.SensorId.PEDOMETER);
+    } catch (err) {
+      console.error(`Failed to stop pedometer sensor: ${JSON.stringify(err)}`);
+    }
+  }
 
   build() {
     NavDestination(){
