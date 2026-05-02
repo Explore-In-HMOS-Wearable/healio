@@ -2,6 +2,7 @@ import { BodyTemp } from './BodyTemp';
 import { Calorie } from './Calorie';
 import { HeartRate } from './HeartRate';
 import { StepCount } from './StepCount';
+import { SleepTracker } from './SleepTracker';
 
 interface Metric {
   title: string;
@@ -26,6 +27,8 @@ struct Index {
     }
     else if (name === 'StepCount') {
       StepCount()
+    } else if (name === 'SleepTracker') {
+      SleepTracker()
     }
   }
 
@@ -33,7 +36,8 @@ struct Index {
     { title: 'Calories', icon: $r('app.media.calories') },
     { title: 'Heart Rate', icon: $r('app.media.heart') },
     { title: 'Step Count', icon: $r('app.media.step')},
-    { title: 'Body Temp', icon: $r('app.media.temp')}
+    { title: 'Body Temp', icon: $r('app.media.temp')},
+    { title: 'Sleep', icon: $r('sys.media.moon_z_fill') }
   ];
 
   @Builder
@@ -43,7 +47,8 @@ struct Index {
         .width(30)
         .height(30)
         .objectFit(ImageFit.Contain)
-        .margin({ bottom: 10 })
+        .margin({ bottom: 5 })
+        .fillColor(item.title === 'Sleep' ? '#FA5352' : Color.Transparent)
 
       Text(item.title)
         .fontSize(9)
@@ -51,10 +56,15 @@ struct Index {
         .textAlign(TextAlign.Center)
     }
     .width(50)
-    .height('30%')
+    .height('25%')
     .backgroundColor(Color.White)
     .borderRadius(8)
-    .margin(5)
+    .margin({
+      top: 2,
+      bottom: 2,
+      left: 1,
+      right: 1
+    })
     .alignItems(HorizontalAlign.Center)
     .justifyContent(FlexAlign.Center)
     .onClick(() => {
@@ -63,7 +73,7 @@ struct Index {
   }
 
   build() {
-    Navigation(this.pageStack){
+    Navigation(this.pageStack) {
       Column() {
         Text('Your Activities')
           .fontColor(Color.Black)
@@ -76,9 +86,10 @@ struct Index {
             this.buildCard(this.metrics[0], 'Calorie')
             this.buildCard(this.metrics[1], 'HeartRate')
           }
-          Row({ space: 10 }) {
+          Row({ space: 5 }) {
             this.buildCard(this.metrics[2], 'StepCount')
             this.buildCard(this.metrics[3], 'BodyTemp')
+            this.buildCard(this.metrics[4], 'SleepTracker')
           }
         }
 
